@@ -1,0 +1,89 @@
+.inline-block {
+	display: inline-block;/*ie7*/zoom:1;*display:inline;/*ie7end*/
+}
+
+.property_(@property, @value) {
+	_: ~"; @{property}:" @value;
+}
+
+.vendor(@property, @value) {
+	.property_('-webkit-@{property}', @value);
+	.property_('-khtml-@{property}', @value);
+	.property_('-moz-@{property}', @value);
+	.property_('-ms-@{property}', @value);
+	.property_('-o-@{property}', @value);
+	.property_(@property, @value);
+}
+
+@timeline-colour: #DDD;
+
+.jqtimeline {
+
+	&, & *, & *:before, & *:after {
+		box-sizing: border-box;
+	}
+
+	.jqtimeline-column, .jqtimeline-line {
+		.inline-block;
+		vertical-align: top;
+	}
+
+	.jqtimeline-line {
+		background: @timeline-colour;
+		width: 4px;
+		margin: 0px 10px;
+
+		.jqtimeline-label {
+			display: block;
+			background: @timeline-colour;
+			font-size: 8px;
+			text-transform: uppercase;
+			color: white;
+			border-radius: 6px;
+			margin-left: -15px;
+			margin-bottom: -12px;
+			height: 12px;
+			width: 34px;
+			line-height: 12px;
+			position: relative;
+			top: 0px;
+			cursor: default;
+			.vendor(user-select, none);
+		}
+	}
+
+	.jqtimeline-item {
+		background: white;
+		padding: 10px;
+		margin: 0px 10px 0px;
+
+		border: 2px solid @timeline-colour;
+		border-radius: 2px;
+	}
+
+	.jqtimeline-column-left .jqtimeline-item:before, .jqtimeline-column-right .jqtimeline-item:before {
+		content: " ";
+		display: block;
+		height: 0px;
+		width: 0px;
+		border-top: 5px solid transparent;
+		border-bottom: 5px solid transparent;
+
+		float: right;
+		margin: 0px -30px 0px 0px;
+		border-left: 8px solid @timeline-colour;
+		border-right: 10px solid transparent;
+	}
+
+	.jqtimeline-column-right .jqtimeline-item:before {
+		float: left;
+		margin: 0px 0px 0px -30px;
+		border-left: 10px solid transparent;
+		border-right: 8px solid @timeline-colour;
+	}
+
+	.jqtimeline-empty {
+		height: 40px;
+	}
+
+}
