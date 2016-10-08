@@ -12,23 +12,38 @@
 (function($) {
 	$.fn.timeline = function(items, options) {
 
-		// Setup jQuery elements
-		var $timeline = $(this).addClass("jqtimeline").empty();
-		var $left_col = $("<div class='jqtimeline-column jqtimeline-column-left'></div>");
-		var $line = $("<div class='jqtimeline-line'></div>");
-		var $right_col = $("<div class='jqtimeline-column jqtimeline-column-right'></div>");
-		$timeline.append($left_col).append($line).append($right_col);
+		// Default options
+		var default_options = {
+			mode: "new"
+		};
+		options = $.extend({}, default_options, options);
 
+		// Setup jQuery elements
+		if (options.mode == "new") {
+			var $timeline = $(this).addClass("jqtimeline").empty();
+			var $left_col = $("<div class='jqtimeline-column jqtimeline-column-left'></div>");
+			var $line = $("<div class='jqtimeline-line'></div>");
+			var $right_col = $("<div class='jqtimeline-column jqtimeline-column-right'></div>");
+			$timeline.append($left_col).append($line).append($right_col);
+		} else if (options.mode == "add") {
+			var $timeline = $(this);
+			var $left_col = $timeline.find(".jqtimeline-column-left");
+			var $line = $timeline.find(".jqtimeline-line");
+			var $right_col = $timeline.find(".jqtimeline-column-right");
+		}
 
 		// Loop through items
-		var label = false;
-		$.each(items, function(i, $item) {
+		var label = $timeline.is("[data-last-label]") ? $timeline.attr("data-last-label") : false;
+		$.each(items, function(i, item) {
+
+			// Check item is a jQuery object
+			var $item = $(item);
 
 			// Check which column is taller and choose that column to add to
 			$col  = $right_col.height() >= $left_col.height() ? $left_col : $right_col;
 
 			// Create elements to be added to the column and add them
-			var $empty_box = i ? $("<div class='jqtimeline-empty'></div>") : "";
+			var $empty_box = options.mode == "add" || i ? $("<div class='jqtimeline-empty'></div>") : "";
 			var $item_box = $("<div class='jqtimeline-item' data-jqtimeline-item='" + i + "'></div>").append($item);
 			$col.append($empty_box).append($item_box);
 
@@ -41,6 +56,8 @@
 
 		});
 
+		// Set last label as attribute so if more are added they can use this
+		$timeline.attr("data-last-label", label);
 
 		// Set all the values that depends on the window and container size so when they resize properly
 		var resizeWindowFunction = function() {
@@ -50,13 +67,8 @@
 			var columnWidth = Math.floor(innerWidth / 2 - lineWidth / 2);
 			$timeline.find(".jqtimeline-column").width(columnWidth);
 
-			// Setup heights
-			$left_col.css({height: "auto"});
-			$right_col.css({height: "auto"});
-			var height = Math.max($left_col.height(), $right_col.height());
-			$left_col.height(height);
-			$line.height(height);
-			$right_col.height(height);
+			// Setup height of line to the max height of either column
+			$line.height(Math.max($left_col.height(), $right_col.height()));
 
 			// Move labels
 			$timeline.find(".jqtimeline-label[data-jqtimeline-item]").each(function() {
